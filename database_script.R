@@ -42,19 +42,33 @@ database <- data %>%
 
 
 
-
-teste <- data %>% 
-        mutate(cred = case_when(
+## INDICE DE CREDIBILIDADE Cecchetti e Krause (2002)
+cred_ck <- data %>% 
+        mutate(ck = case_when(
                 data$exp_ipca <= data$inflacao_meta_central ~ 1,
                 data$exp_ipca > data$inflacao_meta_central & 
                         data$exp_ipca < 20 ~ (1-(1/(20-data$inflacao_meta_central))*(data$exp_ipca - data$inflacao_meta_central)),
                 data$exp_ipca >= 20 ~ 0
                 )
         ) %>%
-        select(periodo, cred)
+        select(periodo, ck)
 
-ggplot(data = teste) + aes(x = periodo, y = cred) + 
-        geom_line() + 
+## INDICE DE CREDIBILIDADE Mendonça e Guimarães (2009)
+cred_mg <- data %>% 
+        mutate(mg = case_when(
+                data$exp_ipca >= data$inflacao_meta_inf & data$exp_ipca <= data$inflacao_meta_sup ~ 1,
+                data$exp_ipca > data$inflacao_meta_sup & data$exp_ipca < 20 ~ (1-(1/(20-data$inflacao_meta_sup))*(data$exp_ipca - data$inflacao_meta_sup)),
+                data$exp_ipca > 0 & data$exp_ipca < data$inflacao_meta_inf ~ (1-(1/(-data$inflacao_meta_inf))*(data$exp_ipca - data$inflacao_meta_inf)),
+                data$exp_ipca >= 20 | data$exp_ipca <= 0 ~ 0
+        )
+        ) %>%
+        select(periodo, mg)
+
+
+
+#Grafico IC_CK
+ggplot(data = cred_ck) + aes(x = periodo, y = ck) + 
+        geom_line(size = 0.75) + 
         scale_y_continuous(limits=c(0, 1), n.breaks = 6L) +
         scale_x_date(date_breaks = "1 year", date_labels = "%Y", limits = as.Date(c("2010-01-01", "2022-10-01"))) +
         labs(y = "IC",
@@ -68,6 +82,21 @@ ggplot(data = teste) + aes(x = periodo, y = cred) +
         theme(panel.grid.major.x = element_line(colour = "gray", linetype = "dotted")) +
         theme(panel.grid.major.y = element_line(colour = "gray", linetype = "dotted"))
  
+#Grafico IC_MG
+ggplot(data = cred_mg) + aes(x = periodo, y = mg) + 
+        geom_line(size = 0.75) + 
+        scale_y_continuous(limits=c(0, 1), n.breaks = 6L) +
+        scale_x_date(date_breaks = "1 year", date_labels = "%Y", limits = as.Date(c("2010-01-01", "2022-10-01"))) +
+        labs(y = "IC",
+             x = "Período",
+             title = "Índice de Credibilidade",
+             subtitle = "Mendonça e Guimarães (2009)",
+             caption = "Feito pelo autor"
+        ) +
+        theme(plot.title = element_text(family = "Times")) +
+        theme_bw() +
+        theme(panel.grid.major.x = element_line(colour = "gray", linetype = "dotted")) +
+        theme(panel.grid.major.y = element_line(colour = "gray", linetype = "dotted"))
 
 
 
