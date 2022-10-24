@@ -127,7 +127,7 @@ grafico_ck <- ggplot(data = cred_ck) + aes(x = periodo, y = ck) +
              x = "Período",
              title = "Índice de Credibilidade",
              subtitle = "Cecchetti e Krause (2002)",
-             caption = "Feito pelo autor"
+             caption = "Elaborado pelo autor"
         ) +
         theme(plot.title = element_text(family = "Times")) +
         theme_bw() +
@@ -143,7 +143,7 @@ grafico_mg <- ggplot(data = cred_mg) + aes(x = periodo, y = mg) +
              x = "Período",
              title = "Índice de Credibilidade",
              subtitle = "Mendonça e Guimarães (2009)",
-             caption = "Feito pelo autor"
+             caption = "Elaborado pelo autor"
         ) +
         theme(plot.title = element_text(family = "Times")) +
         theme_bw() +
@@ -160,7 +160,7 @@ grafico_llr <- ggplot(data = cred_llr) + aes(x = periodo, y = llr) +
              x = "Período",
              title = "Índice de Credibilidade",
              subtitle = "Levieuge, Lucotte e Ringuedé (2018)",
-             caption = "Feito pelo autor"
+             caption = "Elaborado pelo autor"
         ) +
         theme(plot.title = element_text(family = "Times")) +
         theme_bw() +
