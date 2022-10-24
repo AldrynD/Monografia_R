@@ -86,10 +86,15 @@ cred_mg <- data %>%
         select(periodo, mg)
 
 
-
-
-
-
+## INDICE DE CREDIBILIDADE LLR (2018):
+cred_llr <- data %>% 
+        mutate(llr = case_when(
+                data$exp_ipca < data$inflacao_meta_inf ~ (1/(exp(data$exp_ipca - data$inflacao_meta_inf) - (data$exp_ipca - data$inflacao_meta_inf))),
+                data$exp_ipca >= data$inflacao_meta_inf & data$exp_ipca <= data$inflacao_meta_sup ~ 1,
+                data$exp_ipca > data$inflacao_meta_sup ~ (1/(exp(data$exp_ipca - data$inflacao_meta_sup) - (data$exp_ipca - data$inflacao_meta_sup)))
+        ) 
+        ) %>% 
+        select(periodo, llr)
 
 
 
@@ -114,7 +119,7 @@ grafico_meta <- ggplot(data = data_meta, aes(x = periodo, y = valor, color = var
 
 
 #Grafico IC_CK
-ggplot(data = cred_ck) + aes(x = periodo, y = ck) + 
+grafico_ck <- ggplot(data = cred_ck) + aes(x = periodo, y = ck) + 
         geom_line(size = 0.75) + 
         scale_y_continuous(limits=c(0, 1), n.breaks = 6L) +
         scale_x_date(date_breaks = "1 year", date_labels = "%Y", limits = as.Date(c("2010-01-01", "2022-10-01"))) +
@@ -130,7 +135,7 @@ ggplot(data = cred_ck) + aes(x = periodo, y = ck) +
         theme(panel.grid.major.y = element_line(colour = "gray", linetype = "dotted"))
  
 #Grafico IC_MG
-ggplot(data = cred_mg) + aes(x = periodo, y = mg) + 
+grafico_mg <- ggplot(data = cred_mg) + aes(x = periodo, y = mg) + 
         geom_line(size = 0.75) + 
         scale_y_continuous(limits=c(0, 1), n.breaks = 6L) +
         scale_x_date(date_breaks = "1 year", date_labels = "%Y", limits = as.Date(c("2010-01-01", "2022-10-01"))) +
@@ -146,11 +151,20 @@ ggplot(data = cred_mg) + aes(x = periodo, y = mg) +
         theme(panel.grid.major.y = element_line(colour = "gray", linetype = "dotted"))
 
 
-
-
-
-
-
-
+#Grafico IC_LLR
+grafico_llr <- ggplot(data = cred_llr) + aes(x = periodo, y = llr) + 
+        geom_line(size = 0.75) + 
+        scale_y_continuous(limits=c(0, 1), n.breaks = 6L) +
+        scale_x_date(date_breaks = "1 year", date_labels = "%Y", limits = as.Date(c("2010-01-01", "2022-10-01"))) +
+        labs(y = "IC",
+             x = "Período",
+             title = "Índice de Credibilidade",
+             subtitle = "Levieuge, Lucotte e Ringuedé (2018)",
+             caption = "Feito pelo autor"
+        ) +
+        theme(plot.title = element_text(family = "Times")) +
+        theme_bw() +
+        theme(panel.grid.major.x = element_line(colour = "gray", linetype = "dotted")) +
+        theme(panel.grid.major.y = element_line(colour = "gray", linetype = "dotted"))
 
 
