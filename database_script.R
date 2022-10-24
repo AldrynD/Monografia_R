@@ -33,7 +33,7 @@ data <- openxlsx::read.xlsx(xlsxFile = "basedados_monografia.xlsx",
 
 
 #Base com tratamento
-database <- data %>% 
+data_pivot <- data %>% 
         pivot_longer(
                 cols = -c(periodo),
                 names_to = "variaveis",
@@ -41,6 +41,27 @@ database <- data %>%
         )
 
 
+#
+data2 <- openxlsx::read.xlsx(xlsxFile = "basedados_monografia.xlsx", 
+                            sheet = "BASEDADOS", 
+                            detectDates = TRUE,
+                            colNames = TRUE, 
+                            na.strings = "-"
+) %>% 
+        as_tibble()
+
+data_pivot2 <- data2 %>% 
+        pivot_longer(
+                cols = -c(periodo),
+                names_to = "variaveis",
+                values_to = "valor"
+        )
+
+
+
+######--------------------------------------------------------------------------
+
+### ÍNDICES DE CREDIBILIDADE ###
 
 ## INDICE DE CREDIBILIDADE Cecchetti e Krause (2002)
 cred_ck <- data %>% 
@@ -64,6 +85,32 @@ cred_mg <- data %>%
         ) %>%
         select(periodo, mg)
 
+
+
+
+
+
+
+
+
+#####---------------------------------------------------------------------------
+
+### GRÁFICOS GERAIS
+
+#GRÁFICO META DE INFLAÇÃO
+data_meta <- data_pivot2 %>% 
+        filter(variaveis %in% c("inflacao_meta_central", "inflacao_meta_sup", "inflacao_meta_inf", "ipca_acum_12m", "exp_ipca"))
+
+
+grafico_meta <- ggplot(data = data_meta, aes(x = periodo, y = valor, color = variaveis, )) +
+        geom_line() +
+        labs(y = "%",
+             x = "Período",
+             title = "Meta de Inflação do BCB",
+             subtitle = "Com intervalos de tolerância e Inflação acumulada vs Esperada",
+             caption = "Fonte: BCB | Elaborado pelo autor"
+        ) +
+        theme_bw()
 
 
 #Grafico IC_CK
