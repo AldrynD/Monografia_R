@@ -33,6 +33,8 @@ library(tsibble)
 library(fable)
 library(fabletools)
 library(feasts)
+library(e1071)
+library(garchx)
 
 
 ### Selecionando base de dados
@@ -43,9 +45,11 @@ bd <- openxlsx::read.xlsx(xlsxFile = "basedados_monografia.xlsx",
                                   colNames = TRUE, 
 )
 
-bd_ts <- ts(data = bd$selic_media_mes, start = c(2000,1), end = c(2022,3), frequency = 12)
+bd_ts <- ts(data = bd$selic100_media_mes, start = c(2000,1), end = c(2022,3), frequency = 12)
 autoplot(bd_ts)
 
+selic_ <- bd$selic100_media_mes %>% 
+        diff()
 
 ### GERANDO AUTORREGRESSIVO PARA SELIC
 
@@ -60,8 +64,10 @@ tseries::adf.test(bd_ts) #p-valor > 1% --> Série não estacionária
 forecast::ndiffs(bd_ts) #Necessário primeira diferença para estacionarizar
 
 #Estimando modelo ARI(1,1)
-AR <- forecast::Arima(y = bd_ts, order = c(1,1,0))
+AR <- forecast::Arima(y = bd_ts, order = c(3,1,0))
 summary(AR)
+
+forecast::auto.arima(bd_ts) #Retorna ARIMA(3,1,3)
 
 #verificar se resíduos são ruído branco
 resid_AR <- ts(AR$residuals)
@@ -69,6 +75,16 @@ resid_AR <- ts(AR$residuals)
 #Teste Ljung-Box
 Box.test(x = resid_AR, type = "Ljung", lag = 1) #Não rejeitamos a H0, ou seja, o resíduo é ruído branco
 forecast::Acf(resid_AR)
+
+
+gar <- ugarchspec(variance.model = list(model = "eGARCH", 
+                                        garchOrder = c(1,1)),
+                  mean.model = list(armaOrder = c(3,1,1)),
+                  distribution.model = "norm")
+gar_fit <- ugarchfit(spec = gar, data = selic_)
+
+
+
 
 
 
