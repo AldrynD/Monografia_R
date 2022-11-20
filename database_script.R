@@ -21,42 +21,29 @@ library(openxlsx)
 #####---------------------------------------------------------------------------
 
 ### BASE DE DADOS ###
-#Base sem tratamento
-data <- openxlsx::read.xlsx(xlsxFile = "basedados_monografia.xlsx", 
+
+## BASEDADOS DE DADOS BRUTA
+basedados <- openxlsx::read.xlsx(xlsxFile = "basedados_monografia.xlsx", 
                             sheet = "BASEDADOS", 
                             detectDates = TRUE,
                             colNames = TRUE, 
                             na.strings = "-"
 ) %>% 
-        filter(data$periodo >= "2010-01-01") %>% 
+        #filter(data$periodo >= "2010-01-01") %>% 
         as_tibble()
 
 
-#Base com tratamento
-data_pivot <- data %>% 
+# BASEDADOS PIVOTADO
+basedados_pivot <- basedados %>% 
         pivot_longer(
                 cols = -c(periodo),
                 names_to = "variaveis",
                 values_to = "valor"
         )
 
-
-#
-data2 <- openxlsx::read.xlsx(xlsxFile = "basedados_monografia.xlsx", 
-                            sheet = "BASEDADOS", 
-                            detectDates = TRUE,
-                            colNames = TRUE, 
-                            na.strings = "-"
-) %>% 
-        as_tibble()
-
-data_pivot2 <- data2 %>% 
-        pivot_longer(
-                cols = -c(periodo),
-                names_to = "variaveis",
-                values_to = "valor"
-        )
-
+# BASEDADOS PARA CONSTRUÇÃO DOS IC'S
+basedados_ics <- basedados %>% 
+        filter(periodo >= "2010-01-01")
 
 
 ######--------------------------------------------------------------------------
@@ -64,46 +51,44 @@ data_pivot2 <- data2 %>%
 ### ÍNDICES DE CREDIBILIDADE ###
 
 ## INDICE DE CREDIBILIDADE Cecchetti e Krause (2002)
-cred_ck <- data %>% 
-        mutate(ck = case_when(
-                data$exp_ipca <= data$inflacao_meta_central ~ 1,
-                data$exp_ipca > data$inflacao_meta_central & 
-                        data$exp_ipca < 20 ~ (1-(1/(20-data$inflacao_meta_central))*(data$exp_ipca - data$inflacao_meta_central)),
-                data$exp_ipca >= 20 ~ 0
+cred_ck <- basedados_ics %>% 
+        dplyr::mutate(ck = case_when(
+                basedados_ics$exp_ipca <= basedados_ics$inflacao_meta_central ~ 1,
+                basedados_ics$exp_ipca > basedados_ics$inflacao_meta_central & 
+                        basedados_ics$exp_ipca < 20 ~ (1-(1/(20-basedados_ics$inflacao_meta_central))*(basedados_ics$exp_ipca - basedados_ics$inflacao_meta_central)),
+                basedados_ics$exp_ipca >= 20 ~ 0
                 )
         ) %>%
         select(periodo, ck)
 
 ## INDICE DE CREDIBILIDADE Mendonça e Guimarães (2009)
-cred_mg <- data %>% 
+cred_mg <- basedados_ics %>% 
         mutate(mg = case_when(
-                data$exp_ipca >= data$inflacao_meta_inf & data$exp_ipca <= data$inflacao_meta_sup ~ 1,
-                data$exp_ipca > data$inflacao_meta_sup & data$exp_ipca < 20 ~ (1-(1/(20-data$inflacao_meta_sup))*(data$exp_ipca - data$inflacao_meta_sup)),
-                data$exp_ipca > 0 & data$exp_ipca < data$inflacao_meta_inf ~ (1-(1/(-data$inflacao_meta_inf))*(data$exp_ipca - data$inflacao_meta_inf)),
-                data$exp_ipca >= 20 | data$exp_ipca <= 0 ~ 0
+                basedados_ics$exp_ipca >= basedados_ics$inflacao_meta_inf & basedados_ics$exp_ipca <= basedados_ics$inflacao_meta_sup ~ 1,
+                basedados_ics$exp_ipca > basedados_ics$inflacao_meta_sup & basedados_ics$exp_ipca < 20 ~ (1-(1/(20-basedados_ics$inflacao_meta_sup))*(basedados_ics$exp_ipca - basedados_ics$inflacao_meta_sup)),
+                basedados_ics$exp_ipca > 0 & basedados_ics$exp_ipca < basedados_ics$inflacao_meta_inf ~ (1-(1/(-basedados_ics$inflacao_meta_inf))*(basedados_ics$exp_ipca - basedados_ics$inflacao_meta_inf)),
+                basedados_ics$exp_ipca >= 20 | basedados_ics$exp_ipca <= 0 ~ 0
         )
         ) %>%
         select(periodo, mg)
 
 
 ## INDICE DE CREDIBILIDADE LLR (2018):
-cred_llr <- data %>% 
+cred_llr <- basedados_ics %>% 
         mutate(llr = case_when(
-                data$exp_ipca < data$inflacao_meta_inf ~ (1/(exp(data$exp_ipca - data$inflacao_meta_inf) - (data$exp_ipca - data$inflacao_meta_inf))),
-                data$exp_ipca >= data$inflacao_meta_inf & data$exp_ipca <= data$inflacao_meta_sup ~ 1,
-                data$exp_ipca > data$inflacao_meta_sup ~ (1/(exp(data$exp_ipca - data$inflacao_meta_sup) - (data$exp_ipca - data$inflacao_meta_sup)))
+                basedados_ics$exp_ipca < basedados_ics$inflacao_meta_inf ~ (1/(exp(basedados_ics$exp_ipca - basedados_ics$inflacao_meta_inf) - (basedados_ics$exp_ipca - basedados_ics$inflacao_meta_inf))),
+                basedados_ics$exp_ipca >= basedados_ics$inflacao_meta_inf & basedados_ics$exp_ipca <= basedados_ics$inflacao_meta_sup ~ 1,
+                basedados_ics$exp_ipca > basedados_ics$inflacao_meta_sup ~ (1/(exp(basedados_ics$exp_ipca - basedados_ics$inflacao_meta_sup) - (basedados_ics$exp_ipca - basedados_ics$inflacao_meta_sup)))
         ) 
         ) %>% 
         select(periodo, llr)
-
-
 
 #####---------------------------------------------------------------------------
 
 ### GRÁFICOS GERAIS
 
 #GRÁFICO META DE INFLAÇÃO
-data_meta <- data_pivot2 %>% 
+data_meta <- basedados_pivot %>% 
         filter(variaveis %in% c("inflacao_meta_central", "inflacao_meta_sup", "inflacao_meta_inf", "ipca_acum_12m", "exp_ipca"))
 
 
@@ -117,6 +102,7 @@ grafico_meta <- ggplot(data = data_meta, aes(x = periodo, y = valor, color = var
         ) +
         theme_bw()
 
+grafico_meta
 
 #Grafico IC_CK
 grafico_ck <- ggplot(data = cred_ck) + aes(x = periodo, y = ck) + 
@@ -131,7 +117,6 @@ grafico_ck <- ggplot(data = cred_ck) + aes(x = periodo, y = ck) +
         ) +
         theme(plot.title = element_text(family = "Times")) +
         theme_bw() +
-        theme(panel.grid.major.x = element_line(colour = "gray", linetype = "dotted")) +
         theme(panel.grid.major.y = element_line(colour = "gray", linetype = "dotted"))
  
 #Grafico IC_MG
@@ -147,7 +132,6 @@ grafico_mg <- ggplot(data = cred_mg) + aes(x = periodo, y = mg) +
         ) +
         theme(plot.title = element_text(family = "Times")) +
         theme_bw() +
-        theme(panel.grid.major.x = element_line(colour = "gray", linetype = "dotted")) +
         theme(panel.grid.major.y = element_line(colour = "gray", linetype = "dotted"))
 
 
@@ -164,7 +148,6 @@ grafico_llr <- ggplot(data = cred_llr) + aes(x = periodo, y = llr) +
         ) +
         theme(plot.title = element_text(family = "Times")) +
         theme_bw() +
-        theme(panel.grid.major.x = element_line(colour = "gray", linetype = "dotted")) +
         theme(panel.grid.major.y = element_line(colour = "gray", linetype = "dotted"))
 
 
