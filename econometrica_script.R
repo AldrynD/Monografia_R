@@ -30,44 +30,60 @@ library(openxlsx)
 library(forecast)
 library(tseries)
 library(tsibble)
-library(fable)
-library(fabletools)
 library(feasts)
 library(e1071)
-library(garchx)
+library(rugarch)
+library(equatiomatic)
 
-
-### Selecionando base de dados
-
-bd <- openxlsx::read.xlsx(xlsxFile = "basedados_monografia.xlsx", 
+### CARREGANDO BASEDADOS2
+basedados2 <- openxlsx::read.xlsx(xlsxFile = "basedados_monografia.xlsx", 
                                   sheet = "BASEDADOS_2", 
                                   detectDates = TRUE,
                                   colNames = TRUE, 
-)
+) %>% as.tibble()
 
-bd_ts <- ts(data = bd$selic100_media_mes, start = c(2000,1), end = c(2022,3), frequency = 12)
-autoplot(bd_ts)
+basedados2_ts <- ts(data = basedados2$selic_media_mes,
+                   start = c(2000,1), 
+                   end = c(2022,9), 
+                   frequency = 12
+                   )
+
+autoplot(basedados2_ts)
 
 selic_ <- bd$selic100_media_mes %>% 
         diff()
 
-### GERANDO AUTORREGRESSIVO PARA SELIC
+
+######--------------------------------------------------------------------------
+
+### TESTES ESTATÍSTICOS ###
+
+
+### GERANDO AUTORREGRESSIVO PARA SELIC (ARIMA)
+
 
 #Verificando função de ACF e ACFP
-forecast::Acf(bd_ts)
-forecast::Pacf(bd_ts) #Truncamento em 3 (autorregressivo de ordem 3)
-ggtsdisplay(bd_ts)
+forecast::Acf(basedados2_ts)
+forecast::Pacf(basedados2_ts) #Truncamento em 3 (indicando um autorregressivo de ordem 3 - AR(3))
+ggtsdisplay(basedados2_ts)
 
-#Verificando se a série é estacionária | Dickey-Fuller
-tseries::adf.test(bd_ts) #p-valor > 1% --> Série não estacionária
 
-forecast::ndiffs(bd_ts) #Necessário primeira diferença para estacionarizar
+#Verificando estacionaridade | Teste Dickey-Fuller
+tseries::adf.test(basedados2_ts) #p-valor > 1% --> Série não estacionária
 
-#Estimando modelo ARI(1,1)
-AR <- forecast::Arima(y = bd_ts, order = c(3,1,0))
-summary(AR)
+forecast::ndiffs(basedados2_ts) #Necessário primeira diferença para estacionarizar
 
-forecast::auto.arima(bd_ts) #Retorna ARIMA(3,1,3)
+#Estimando modelo ARI(3,1)
+ARI <- forecast::Arima(y = basedados2_ts,
+                       order = c(3,1,0),
+                       include.constant = TRUE)
+summary(ARI)
+
+#Calculando o p-valor dos parâmetros ARI (drift = constant)
+(1-pnorm(abs(ARI$coef)/sqrt(diag(ARI$var.coef))))*2
+
+
+forecast::auto.arima(basedados2_ts) #Retorna ARIMA(3,1,3)
 
 #verificar se resíduos são ruído branco
 resid_AR <- ts(AR$residuals)
