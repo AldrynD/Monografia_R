@@ -29,6 +29,12 @@ basedados <- openxlsx::read.xlsx(xlsxFile = "basedados_monografia.xlsx",
                             colNames = TRUE, 
                             na.strings = "-"
 ) %>% 
+        mutate(llr = case_when(
+                basedados$exp_ipca < basedados$inflacao_meta_inf ~ (1/(exp(basedados$exp_ipca - basedados$inflacao_meta_inf) - (basedados$exp_ipca - basedados$inflacao_meta_inf))),
+                basedados$exp_ipca >= basedados$inflacao_meta_inf & basedados$exp_ipca <= basedados$inflacao_meta_sup ~ 1,
+                basedados$exp_ipca > basedados$inflacao_meta_sup ~ (1/(exp(basedados$exp_ipca - basedados$inflacao_meta_sup) - (basedados$exp_ipca - basedados$inflacao_meta_sup)))
+        ) 
+        ) %>%
         #filter(data$periodo >= "2010-01-01") %>% 
         as_tibble()
 
