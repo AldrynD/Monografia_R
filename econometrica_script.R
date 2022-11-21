@@ -34,24 +34,74 @@ library(feasts)
 library(e1071)
 library(rugarch)
 library(equatiomatic)
+library(aTSA)
+library(nortsTest)
 
 ### CARREGANDO BASEDADOS2
 basedados2 <- openxlsx::read.xlsx(xlsxFile = "basedados_monografia.xlsx", 
                                   sheet = "BASEDADOS_2", 
                                   detectDates = TRUE,
-                                  colNames = TRUE, 
-) %>% as.tibble()
+                                  colNames = TRUE
+) %>% 
+        dplyr::mutate(log_selic = log(selic_media_mes)) %>% 
+        dplyr::mutate(difference = log_selic - lag(log_selic, 1)) %>% 
+        select(periodo, log_selic)
 
-basedados2_ts <- ts(data = basedados2$selic_media_mes,
-                   start = c(2000,1), 
-                   end = c(2022,9), 
-                   frequency = 12
-                   )
+a_dif <- diff(basedados2$log_selic) %>% as.ts()
+qqnorm(a_dif)
+qqline(a_dif)
+forecast::Acf(a_dif)
+forecast::Pacf(a_dif)
 
-autoplot(basedados2_ts)
+a_dif2 <- a_dif^2
+forecast::Acf(a_dif2)
+forecast::Pacf(a_dif2)
 
-selic_ <- bd$selic100_media_mes %>% 
-        diff()
+a_arima <- forecast::Arima(y = a_dif, order = c(2,0,0), include.constant = TRUE)
+summary(a_arima)
+
+Box.test(x = a_arima$residuals, type = "Ljung", lag = 1) 
+forecast::Acf(a_arima$residuals) 
+
+
+
+
+a_modelo_egarch <- ugarchspec(
+        variance.model = list(model = "eGARCH", garchOrder = c(1,1), external.regressors = as.matrix(basedados$llr)),
+        mean.model = list(armaOrder = c(2,0))
+)
+
+a_gar_fit <- ugarchfit(spec = a_modelo_egarch, data = a_dif)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#basedados2_ts <- ts(data = basedados2$selic_media_mes,
+                  # start = c(2000,1),
+                   #end = c(2022,9),
+                   #frequency = 12
+                   #)
+
+#autoplot(basedados2_ts)
+
+#selic_ <- basedados2$selic_media_mes %>% 
+        #diff()
 
 
 ######--------------------------------------------------------------------------
@@ -63,7 +113,7 @@ selic_ <- bd$selic100_media_mes %>%
 
 
 #Verificando função de ACF e ACFP
-forecast::Acf(basedados2_ts)
+forecast::Acf(a_dif)
 forecast::Pacf(basedados2_ts) #Truncamento em 3 (indicando um autorregressivo de ordem 3 - AR(3))
 ggtsdisplay(basedados2_ts)
 
@@ -79,28 +129,42 @@ ARI <- forecast::Arima(y = basedados2_ts,
                        include.constant = TRUE)
 summary(ARI)
 
+
+resid2 <- ARI_resid^2
+Box.test(x = resid2, type = "Ljung") ## Rejeitamos a H0, então tem efeito ARCH
+# e que devemos modelar a volatilidade.
+forecast::Acf(resid2) 
+
+
+
+
+
 #Calculando o p-valor dos parâmetros ARI (drift = constant)
-(1-pnorm(abs(ARI$coef)/sqrt(diag(ARI$var.coef))))*2
+ARI_pvalue <- (1-pnorm(abs(ARI$coef)/sqrt(diag(ARI$var.coef))))*2
+
+##verificando se resíduos são ruído branco | Ljung-Box Test
+ARI_resid <- ts(ARI$residuals)
+
+Box.test(x = ARI_resid, type = "Ljung", lag = 1) #Não rejeitamos a H0, ou seja, o resíduo é ruído branco
+forecast::Acf(ARI_resid)
 
 
-forecast::auto.arima(basedados2_ts) #Retorna ARIMA(3,1,3)
+######--------------------------------------------------------------------------
 
-#verificar se resíduos são ruído branco
-resid_AR <- ts(AR$residuals)
+### ESTIMANDO MODELO EGARCH ###
 
-#Teste Ljung-Box
-Box.test(x = resid_AR, type = "Ljung", lag = 1) #Não rejeitamos a H0, ou seja, o resíduo é ruído branco
-forecast::Acf(resid_AR)
+modelo_egarch <- ugarchspec(
+        variance.model = list(model = "eGARCH", garchOrder = c(1,1), external.regressors = as.matrix(cred_llr)),
+        mean.model = list(armaOrder = c(3,1))
+)
 
-
-gar <- ugarchspec(variance.model = list(model = "eGARCH", 
-                                        garchOrder = c(1,1)),
-                  mean.model = list(armaOrder = c(3,1,1)),
-                  distribution.model = "norm")
-gar_fit <- ugarchfit(spec = gar, data = selic_)
+gar_fit <- ugarchfit(spec = modelo_egarch, data = selic_)
 
 
-
+garch.spec <- ugarchspec(
+        variance.model = list(model = "sGARCH", garchOrder = c(1, 1), external.regressors = matrix(df$regressor)),
+        mean.model = list(armaOrder = c(2, 0), include.mean = TRUE))
+ugarchfit(garch.spec, df$dependent)
 
 
 
