@@ -1,4 +1,3 @@
-
 ###-----------------------------------------------------------------------------
 
 ##### 02-Estatisticos_&_EgarchModel
@@ -56,11 +55,11 @@ qqline(basedados2_log_selic_ts)
 
 #Função de autocorrelação (ACF): Ela nos mostra o quão forte o valor observado hoje está correlacionado com os 
 #valores observados no passado e como choques hoje afetam valores futuros da variável estocástica.
-forecast::Acf(basedados2_log_selic_ts) 
+forecast::Acf(basedados2_log_selic_ts, main = "") 
 
 #Função de Autocorrelação Parcial (PACF): Teste de correlação entre a variável no instante t e uma de suas defasagens,
 #retirado os efeitos das outras defasagens.
-forecast::Pacf(basedados2_log_selic_ts) #Truncagem em 3, indicando AR(3)
+forecast::Pacf(basedados2_log_selic_ts, main = "", ylab = "ACF Parcial") #Truncagem em 3, indicando AR(3)
 
 #Teste Dickey-Fuller aumentado (ADF): Teste de estacionaridade
 #H0: Possui raíz unitária --> processo não estacionário
@@ -121,5 +120,3 @@ modelo_egarch_fit #Notemos que TODOS os parâmetros são significantes a 1%.
 #Durbin-Watson; se DW ~ 0 --> Existe autocorrelação positiva.
 #               se DW ~ 2 --> Não existe autocorrelação.
 #               se DW ~ 4 --> Existe autocorrelação negativa.
-
-
