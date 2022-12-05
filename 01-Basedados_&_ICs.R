@@ -121,6 +121,42 @@ basedados_meta_plot <- ggplot(data = basedados_meta, aes(x = periodo, y = valore
 basedados_meta_plot
 
 
+
+##############
+
+
+a_grafico <- basedados %>% 
+        ggplot(aes(x = periodo)) +  
+        geom_line(aes(y = inflacao_meta_inf), color = "black", linetype = "dashed", size = 1) +
+        geom_line(aes(y = inflacao_meta_central), color = "gray", size = 1.3) +
+        geom_line(aes(y = inflacao_meta_sup), color = "black", linetype = "dashed", size = 1) +
+        geom_line(aes(y = ipca_acum_12m), color = "black", size = 0.7) +
+        geom_line(aes(y = exp_ipca), color = "black", linetype = "F1", size = 1.3) +
+        scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
+        labs(y = "Inflação, em %", x = "") +
+        theme_bw() +
+        theme_set(theme_bw(base_size = 13))
+a_grafico
+
+##############
+
+
+
+
+
+######
+
+
+
+
+
+
+
+
+
+
+
+
 ### GRÁFICOS DOS ÍNDICES DE CREDIBILIDADE ###
 
 
@@ -129,14 +165,15 @@ basedados_cred_ck_plot <- ggplot(data = basedados_cred_ck) + aes(x = periodo, y 
   geom_line(size = 0.75) + 
   scale_y_continuous(limits=c(0, 1), n.breaks = 6L) +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y", limits = as.Date(c("2010-01-01", "2022-06-01"))) +
-  labs(y = "IC",
-       x = "Período",
-       title = "Índice de Credibilidade (CK)",
-       subtitle = "Cecchetti e Krause (2002)",
-       caption = "Fonte: Elaborado pelo autor"
+  labs(y = "IC CK",
+       x = ""#,
+      #title = "Índice de Credibilidade (CK)",
+       #subtitle = "Cecchetti e Krause (2002)",
+       #caption = "Fonte: Elaborado pelo autor"
   ) +
   theme(plot.title = element_text(family = "Times")) +
-  theme_bw() #+
+  theme_bw()+
+        theme_set(theme_bw(base_size = 13))#+
   #theme(panel.grid.major.y = element_line(colour = "gray", linetype = "dotted"))
 
 basedados_cred_ck_plot
@@ -147,14 +184,15 @@ basedados_cred_mg_plot <- ggplot(data = basedados_cred_mg) + aes(x = periodo, y 
   geom_line(size = 0.75) + 
   scale_y_continuous(limits=c(0, 1), n.breaks = 6L) +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y", limits = as.Date(c("2010-01-01", "2022-06-01"))) +
-  labs(y = "IC",
-       x = "Período",
-       title = "Índice de Credibilidade (MG)",
-       subtitle = "Mendonça e Guimarães (2009)",
-       caption = "Fonte: Elaborado pelo autor"
+  labs(y = "IC MG",
+       x = ""#,
+       #title = "Índice de Credibilidade (MG)",
+       #subtitle = "Mendonça e Guimarães (2009)",
+       #caption = "Fonte: Elaborado pelo autor"
   ) +
   theme(plot.title = element_text(family = "Times")) +
-  theme_bw()# +
+  theme_bw()+
+        theme_set(theme_bw(base_size = 13))# +
   #theme(panel.grid.major.y = element_line(colour = "gray", linetype = "dotted"))
 
 basedados_cred_mg_plot
@@ -165,14 +203,15 @@ basedados_cred_llr_plot <- ggplot(data = basedados_cred_llr) + aes(x = periodo, 
   geom_line(size = 0.75) + 
   scale_y_continuous(limits=c(0, 1), n.breaks = 6L) +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y", limits = as.Date(c("2010-01-01", "2022-06-01"))) +
-  labs(y = "IC",
-       x = "Período",
-       title = "Índice de Credibilidade (LLR)",
-       subtitle = "Levieuge, Lucotte e Ringuedé (2018)",
-       caption = "Fonte: Elaborado pelo autor"
+  labs(y = "IC LLR",
+       x = ""#,
+       #title = "Índice de Credibilidade (LLR)",
+       #subtitle = "Levieuge, Lucotte e Ringuedé (2018)",
+       #caption = "Fonte: Elaborado pelo autor"
   ) +
   theme(plot.title = element_text(family = "Times")) +
-  theme_bw()# +
+  theme_bw()+
+        theme_set(theme_bw(base_size = 13))# +
   #theme(panel.grid.major.y = element_line(colour = "gray", linetype = "dotted"))
 
 basedados_cred_llr_plot
