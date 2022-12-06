@@ -33,7 +33,8 @@ basedados <- openxlsx::read.xlsx(xlsxFile = "basedados_monografia.xlsx",
                                  colNames = TRUE, 
                                  na.strings = "-"
 ) %>% 
-  as_tibble()
+  as_tibble() %>% 
+        mutate(log_selic = log(selic))
 
 
 #Pivotando a base de dados bruta (basedados):
@@ -140,9 +141,17 @@ a_grafico
 
 ##############
 
-
-
-
+a_juros <- basedados %>% 
+        ggplot(aes(x = periodo)) + 
+        geom_line(aes(y = exp_selic), color = "black", size = 0.7) +
+        geom_line(aes(y = selic), color = "black", linetype = "F1", size = 1) +
+        scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
+        scale_y_continuous(limits=c(0, 30), n.breaks = 5L) +
+        labs(y = "%", x = "") +
+        theme(plot.title = element_text(family = "Times")) +
+        theme_bw() +
+        theme_set(theme_bw(base_size = 13))
+a_juros
 
 ######
 
