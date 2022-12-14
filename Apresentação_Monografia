@@ -1,0 +1,417 @@
+\documentclass{beamer}[abntex2] 
+\usepackage[alf]{abntex2cite} 
+\usetheme{Dresden}
+\setbeamertemplate{page number in head/foot}[totalframenumber] %slide number
+\usecolortheme{spruce} 
+\setbeamercolor{titlelike}{parent=structure,fg = black}
+\usepackage[brazil]{babel}
+\usepackage[utf8x]{inputenc}
+\usefonttheme{professionalfonts}
+\usepackage{ragged2e} %alinhamento de text
+\usepackage{times}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{amsmath}
+\usepackage{mathtools} %simbolos maths
+\usepackage{tabulary}
+\usepackage{pgfgantt}
+\usepackage{verbatim}
+\usepackage{tikz}
+\usetikzlibrary{arrows,shapes}
+\usepackage{adjustbox}
+\usepackage{soul}
+\usepackage{listings}
+\usepackage{xcolor} %colorir texto
+\usepackage{adjustbox}
+\setbeamertemplate{itemize item}{\color{black}$\blacksquare$}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{varwidth}
+\usepackage{amssymb}
+
+
+
+\title{Política Monetária e o Fator Credibilidade do Banco Central Brasileiro}
+
+%------------------------------------------------------------
+%------------------------------------------------------------
+%POLÍTICA MONETÁRIA E O FATOR CREDIBILIDADE DO BANCO CENTRAL BRASILEIRO
+
+\title{Política Monetária e o Fator Credibilidade do Banco Central Brasileiro}
+\institute{Centro Universitário FECAP}
+\author[Aldryn Dylan Mamani Quispe]{Aldryn Dylan Mamani Quispe \\ Orientador: Alexsandro Roberto N. Ordonez}
+
+\date{14 de dezembro de 2022}
+
+\begin{document}
+\tikzstyle{every picture}+=[remember picture]
+\lstset{language=C++}   
+\everymath{\displaystyle}
+
+
+\begin{frame}
+
+	\titlepage
+
+\end{frame}
+
+%------------------------------------------------------
+%%% INTRODUÇÃO E MOTIVAÇÃO DA PESQUISA
+\begin{frame}{Introdução - Motivação}
+
+    \begin{itemize}
+    \setlength\itemsep{1em}
+
+        \item Variáveis macroeconômicas apresentam períodos em que exibem um comportamento mais constante e \textbf{períodos em que sofrem alta volatilidade} \cite{enders2015applied}.
+
+            \begin{itemize}
+                \item Em cenários de instabilidade econômica as expectativas sobre o desempenho futuro da economia se alteram, e tendem a mudar a trajetória esperada no longo prazo.
+            \end{itemize}
+            
+        \item Em situações de pressões inflacionárias exige que o Banco Central adote medidas para cumprir com o seu papel de autoridade na busca da estabilidade dos preços.
+
+\pause
+            \begin{itemize}
+                \item \textit{"A credibilidade do BC tende a auxiliar na eficácia das políticas monetárias em atingir seus objetivos de condução da economia"} \cite{blinder2000central}.
+            \end{itemize}
+    \end{itemize}
+
+\end{frame}
+
+
+%------------------------------------------------------
+%%% PERGUNTA DE PESQUISA
+\begin{frame}{Pergunta de Pesquisa}
+    
+    \begin{center}
+    
+        \textbf{Qual a relação entre a credibilidade do Banco Central Brasileiro e a volatilidade das decisões da taxa básica de juros.}    
+    
+    \end{center}
+
+\end{frame}
+
+
+%------------------------------------------------------
+%%% METODOLOGIA DA PESQUISA
+\begin{frame}{Metodologia}
+
+São aplicados duas metodologias no estudo:\vspace{0.5cm}
+\pause
+
+    \begin{itemize}[<+->]
+    \setlength\itemsep{1em}
+    
+        \item Mensuração de índices de credibilidade para o Banco Central
+            \begin{center}
+            
+            \begin{itemize}
+                \item \textit{"Se a autoridade monetária tem uma meta de inflação explícita, a credibilidade pode ser medida pela distância da inflação esperada à meta."} (SVENSSON, 2000, p. 217)
+            \end{itemize}
+            
+            \end{center}
+            
+        \item Estimação do modelo de volatilidade
+            \begin{center}
+
+                \begin{itemize}
+                    \item Modelo de \textit{Heterocedasticidade Condicional Auto-Regressiva Generalizada Exponencial (\textbf{EGARCH})}, proposto por \cite{nelson1991conditional}.
+                \end{itemize}
+                
+            \end{center}
+
+    \end{itemize}
+
+\end{frame}
+
+%------------------------------------------------------
+%%% METODOLOGIA DA PESQUISA
+%\begin{frame}{Metodologia - Índices de Credibilidade}
+
+   
+%{\bf 1º IC.}  Índice de Credibilidade $(IC_{CK})$ elaborado por Cecchetti e Krause (2002):
+%    \begin{center}
+%\begin{exerc}\label{ex:2.3}
+
+%	\[IC_{CK}=\begin{cases}
+%            1, \hbox{ se $E(\pi) \leqslant {\pi}_t$} \\
+    
+%        \displaystyle 1 - \frac{1}{(0,2 - {\pi}_t)} {[E(\pi) - {\pi}_{t}]}, \hbox{ se ${\pi}_{t} < E(\pi) < 0,2$}\\
+    
+%        0, \hbox{ se $E(\pi) > 0,2$.}
+%   \end{cases}\]
+  
+%\end{exerc}
+%    \end{center}
+    
+%\end{frame}
+
+
+%------------------------------------------------------
+%%% METODOLOGIA DA PESQUISA
+\begin{frame}{Metodologia - Índices de Credibilidade}
+
+   
+{\bf 1º IC.}  Índice de Credibilidade $(IC_{MG})$ elaborado por Mendonça e Guimarães (2009):
+
+   \begin{center}
+    \begin{exerc}\label{ex:2.3}
+
+	\[IC_{MG}=\begin{cases}
+         1, \hbox{ se ${\pi}^*_{tMin}\leq E(\pi) \leq {\pi}^*_{tMax}$}\\
+    
+        \displaystyle 1 - \frac{1}{(0,2 - {\pi}^*_{tMax})} {[E(\pi) - {\pi}^*_{tMax}]}, \hbox{ se ${\pi}^*_{tMax}< E(\pi)<0,2$}\\
+    
+        \displaystyle 1 - \frac{1}{-{\pi}^*_{tMin}} {[E(\pi) - {\pi}^*_{tMin}]}, \hbox{ se $0<E(\pi)<{\pi}^*_{tMin}$}\\
+    
+        0, \hbox{ se $E(\pi) \geq 0,2$  ou  $E(\pi) \leq 0$.}
+        
+    \end{cases}\]
+  
+    \end{exerc}
+    \end{center}
+
+    
+\end{frame}
+
+
+%------------------------------------------------------
+%%% METODOLOGIA DA PESQUISA
+\begin{frame}{Metodologia - Índices de Credibilidade}{\textbf{Limitações}}
+
+No entanto, Levieuge, Lucotte e Ringuedé (2018) indicam \textbf{duas limitações} dos IC anterior ($IC_{MG}$):\vspace{0.5cm}
+\pause
+\\
+    \begin{itemize}[<+->]
+    \setlength\itemsep{1em}
+        \item O comportamento do índice de credibilidade a depender da meta de inflação;
+        \item Imposição de limites ad hoc de 20\% e 0\% na construção do índice de credibilidade.
+    \end{itemize}
+
+
+\end{frame}
+
+
+%------------------------------------------------------
+%%% METODOLOGIA DA PESQUISA
+\begin{frame}{Metodologia - Índices de Credibilidade}{\textbf{Limitações}}
+
+
+        \textit{“[...] \textbf{desvios positivos} da inflação esperada em
+relação à meta sinalizam claramente que as pessoas não acreditam na capacidade do banco central para cumprir este compromisso. Certamente, os \textbf{desvios negativos} também indicam que os agentes acreditam
+que o banco central vai errar o alvo. No entanto, em tal situação, a inflação permanece sob
+controle. Este caso raramente é visto como um sinal de que as autoridades monetárias
+abandonam seu objetivo”} (LEVIEUGE; LUCOTTE; RINGUEDÉ, 2018, p. 501).
+
+
+\end{frame}
+
+
+
+
+
+%------------------------------------------------------
+%%% METODOLOGIA DA PESQUISA
+\begin{frame}{Metodologia - Índices de Credibilidade}{\textbf{Limitações}}
+
+\begin{itemize}
+    \item Perfil de comportamento do $IC_{MG}$
+\end{itemize}
+
+\begin{figure}[h]
+\begin{center}
+
+\includegraphics[scale=0.5]{Apresentacao/Graficos/graf1.png}
+\caption{Levieuge, Lucotte e Ringuedé (2018, p. 499)}
+\end{center}
+\end{figure}
+
+\end{frame}
+
+
+%------------------------------------------------------
+%%% METODOLOGIA DA PESQUISA
+
+\begin{frame}{Metodologia - Índices de Credibilidade}
+
+{\bf 2º IC.}  Índice de Credibilidade $(IC_{LLR})$ elaborado por Levieuge, Lucotte e Ringuedé (2018):
+
+
+\begin{exerc}\label{ex:2.3}
+ 
+	\[IC_{LLR}=\begin{cases}
+ 
+	\displaystyle \frac{1}{exp(E(\pi)-{\pi}^*_{tMin})-(E(\pi)-{\pi}^*_{tMin})}, \hbox{ se $E(\pi)<{\pi}^*_{tMin}$}\\
+ 
+        1, \hbox{ se $E(\pi)\in[{\pi}^*_{tMin},{\pi}^*_{tMax}]$}\\
+    
+        \displaystyle \frac{1}{exp(E(\pi)-{\pi}^*_{tMax})-(E(\pi)-{\pi}^*_{tMax})}, \hbox{ se $E(\pi)>{\pi}^*_{tMax}$}.\\
+
+    
+    \end{cases}\]
+  
+    \end{exerc}
+
+\end{frame}
+
+
+%------------------------------------------------------
+
+
+
+\begin{frame}{Metodologia - Modelo de Volatilidade}
+O método utilizado para medir a volatilidade da taxa de juros é o modelo EGARCH \cite{nelson1991conditional}:
+
+    \begin{center}
+
+    $
+    ln(\sigma^2_t)=\omega_0 +
+    \sum_{i=1}^q \alpha_ig(\epsilon_{t-i}) + 
+    \sum_{j=1}^p \gamma_iln(\sigma^2_{t-i})
+    $
+
+    \end{center}
+
+onde $g(\epsilon_{t}) = \theta \epsilon_{t} + \gamma [\lvert \epsilon_{t}\rvert - E\lvert \epsilon_{t}\rvert]$.
+
+\pause
+\vspace{0.5cm}
+
+    \begin{itemize}[<+->]
+        \item Possibilidade de captar uma influência assimétrica da volatilidade da taxa de juros;
+        \item Parâmetros podem ser não positivos e mesmo assim garantir que a variância condicional seja positiva.
+    \end{itemize}
+
+
+
+
+
+\end{frame}
+
+%------------------------------------------------------
+
+\begin{frame}{Desenvolvimento} 
+
+    \begin{itemize}
+        \item Para analisar a \textbf{relação entre a credibilidade do Banco Central e a volatilidade da taxa de juros} é estimado o modelo EGARCH (1,1) com a variável exógena $IC_{LLR_{t-1}}$ na equação de variância:\vspace{0.5cm}
+    \end{itemize}
+
+    \begin{center}
+
+    $
+    ln(\sigma^2_t)=\omega_0 +
+    \alpha_ig(\epsilon_{t-1}) + 
+    \gamma_iln(\sigma^2_{t-1}) +
+    \mathbf{\phi IC_{LLR_{t-1}}}
+    $
+
+    \end{center}
+
+\end{frame}
+
+%------------------------------------------------------
+
+\begin{frame}{Resultados}{\textbf{Estimação EGARCH (1,1)}}
+
+    \begin{figure}[h]
+        \begin{center}
+
+        \includegraphics[scale=0.345]{Apresentacao/Tabelas/tab4.png}
+        \caption{Elaborado pelo autor.}
+
+        \end{center}
+    \end{figure}
+
+\end{frame}
+
+%------------------------------------------------------
+
+\begin{frame}{Resultados}
+
+    \begin{itemize}[<+->]
+    \setlength\itemsep{1em}
+        \item Parâmetros do modelo são estatisticamente significantes a 1\%.
+        \item Parâmetro do $IC_{LLR_{t-1}}$ também é estatisticamente significante a 1\% \pause
+        e com \textbf{sinal negativo}!.
+        
+    \end{itemize}
+
+\end{frame}
+
+%------------------------------------------------------
+
+\begin{frame}{Conclusão}
+
+    \begin{itemize}
+    \setlength\itemsep{1em}
+        \item Podemos confirmar que há evidências que indicam uma \textbf{influência negativa entre o fator credibilidade da autoridade monetária e a volatilidade da taxa de juros} para o caso brasileiro.\vspace{0.5cm}
+        \item O papel da credibilidade do Banco Central que assegura uma \textbf{menor exigência de variação da taxa de juros} para uma \textbf{condução eficaz da política monetária} na economia.
+
+\end{itemize}
+
+\end{frame}
+
+
+%------------------------------------------------------
+%%% APÊNDICE
+
+\begin{frame}{Apêndice}
+
+\begin{itemize}
+    \item Índices de credibilidade de \cite{de2009inflation} e \cite{levieuge2018central}
+\end{itemize}
+
+
+\begin{varwidth}{\textwidth}
+    \begin{figure}
+        \includegraphics[height=0.43\textheight]{Apresentacao/Graficos/graf5.png}
+        \caption{IC MG}
+    \end{figure}
+    
+\end{varwidth}
+    \hfill
+    \begin{varwidth}{\textwidth}
+        \begin{figure}
+            \includegraphics[height=0.43\textheight]{Apresentacao/Graficos/graf6.png}
+            \caption{IC LLR}
+        \end{figure}
+    \end{varwidth}
+
+    
+\end{frame}
+
+
+%-------------------------
+\begin{frame}
+    \textcolor{white}{\cite{barro1983rules}, \cite{beck2001country}, \cite{blinder2000central}, \cite{bollerslev1986generalized}, \cite{bordo2014central}, \cite{cecchetti2002central}, \cite{de2007towards}, \cite{de2009inflation}, \cite{enders2015applied}, \cite{engle1982autoregressive}, \cite{kydland1977rules}, \cite{levieuge2018central}, \cite{lucas1972expectations}, \cite{mendoncca2006transparencia}, \cite{nelson1991conditional}, \cite{perlin2020garch}, \cite{svensson2000should}, \cite{taylor1993discretion} }
+\end{frame}
+
+%------------------------------------------------------
+
+\begin{frame}[allowframebreaks]{REFERÊNCIAS}
+
+    \bibliography{Bibliografia}
+    
+\end{frame}
+
+
+
+
+%------------------------------------------------
+\begin{frame}
+
+    \begin{center}
+        Perguntas...
+    \end{center}
+
+\end{frame}
+
+%-------------------------------------------------
+\begin{frame}
+    \begin{center}
+        Muito obrigado a todos!
+    \end{center}
+\end{frame}
+
+\end{document}
+
